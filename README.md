@@ -1,4 +1,4 @@
-# heat-stack-purge-tool
+# heat-stack-purge-tool for heat-mitaka
 
 ## これは、なに？
 OpenStack heatを活用してオーケストレーション制御を実現するには、適切なheat-stackを作成する必要があります。
