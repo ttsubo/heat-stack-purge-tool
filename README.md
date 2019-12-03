@@ -1,4 +1,4 @@
-# heat-stack-purge-tool for heat-mitaka
+# heat-stack-purge-tool for heat-juno
 
 ## これは、なに？
 OpenStack heatを活用してオーケストレーション制御を実現するには、適切なheat-stackを作成する必要があります。
@@ -15,30 +15,30 @@ OpenStack heatを活用してオーケストレーション制御を実現する
 +----------------------------------+---------+
 | ID                               | Name    |
 +----------------------------------+---------+
-| 3fb0eae714da4f7d9f345641fee1f936 | demo    |
-| b87b147b20a643b3a3ea29567e11f7ca | service |
-| d83c0ec5ab4746988aacff093dfa9a96 | admin   |
+| 1baba4bc10444cada4023c02bd1f114c | admin   |
+| d45be0f05d9748f491db9e49fb230eab | demo    |
+| d727e035945d450f98ee4a5e633e7b1b | service |
 +----------------------------------+---------+
 ```
 - demoテナントにて作成されたheat-stackの状態を確認しておく
 
 ```
 # heat --os-project-name demo stack-list
-+--------------------------------------+----------------------------------------------+-----------------+---------------------+--------------+
-| id                                   | stack_name                                   | stack_status    | creation_time       | updated_time |
-+--------------------------------------+----------------------------------------------+-----------------+---------------------+--------------+
-| d3961cf3-a6f6-4e44-b087-72b6bf9e1a8e | network_c1073b9e-6cbb-4ff8-b971-66ac840e1344 | CREATE_COMPLETE | 2019-12-01T22:04:11 | None         |
-+--------------------------------------+----------------------------------------------+-----------------+---------------------+--------------+
++--------------------------------------+----------------------------------------------+-----------------+----------------------+
+| id                                   | stack_name                                   | stack_status    | creation_time        |
++--------------------------------------+----------------------------------------------+-----------------+----------------------+
+| 428ab810-5946-42c0-b18b-042d312de06f | network_811d15de-b1f2-465d-9020-2f6d40313017 | CREATE_COMPLETE | 2019-12-03T00:22:47Z |
++--------------------------------------+----------------------------------------------+-----------------+----------------------+
 ```
 - heat-stackに関連付けられたheat-resourcの状態を確認しておく
 
 ```
-# heat --os-project-name demo resource-list network_c1073b9e-6cbb-4ff8-b971-66ac840e1344
-+---------------+--------------------------------------+------------------------------+-----------------+---------------------+
-| resource_name | physical_resource_id                 | resource_type                | resource_status | updated_time        |
-+---------------+--------------------------------------+------------------------------+-----------------+---------------------+
-| network       | c1073b9e-6cbb-4ff8-b971-66ac840e1344 | OS::Contrail::VirtualNetwork | CREATE_COMPLETE | 2019-12-01T22:04:11 |
-+---------------+--------------------------------------+------------------------------+-----------------+---------------------+
+# heat --os-project-name demo resource-list network_811d15de-b1f2-465d-9020-2f6d40313017
++---------------+--------------------------------------+------------------------------+-----------------+----------------------+
+| resource_name | physical_resource_id                 | resource_type                | resource_status | updated_time         |
++---------------+--------------------------------------+------------------------------+-----------------+----------------------+
+| network       | 811d15de-b1f2-465d-9020-2f6d40313017 | OS::Contrail::VirtualNetwork | CREATE_COMPLETE | 2019-12-03T00:22:47Z |
++---------------+--------------------------------------+------------------------------+-----------------+----------------------+
 ```
 - さらに、mysqlに登録されたheat-stackの状態を確認しておく
 
@@ -50,30 +50,25 @@ You can turn off this feature to get a quicker startup with -A
 Database changed
 mysql> select * from stack \G;
 *************************** 1. row ***************************
-                   id: d3961cf3-a6f6-4e44-b087-72b6bf9e1a8e
-           created_at: 2019-12-01 22:04:11
+                   id: 428ab810-5946-42c0-b18b-042d312de06f
+           created_at: 2019-12-03 00:22:47
            updated_at: NULL
-           deleted_at: NULL
-                 name: network_c1073b9e-6cbb-4ff8-b971-66ac840e1344
-      raw_template_id: 1
-        user_creds_id: 1
+                 name: network_811d15de-b1f2-465d-9020-2f6d40313017
+      raw_template_id: 12
+        user_creds_id: 10
              username: admin
              owner_id: NULL
-               action: CREATE
                status: COMPLETE
         status_reason: Stack CREATE completed successfully
+           parameters: {"parameters": {"admin_state_up": true, "uuid": "811d15de-b1f2-465d-9020-2f6d40313017", "name": "811d15de-b1f2-465d-9020-2f6d40313017"}, "resource_registry": {"resources": {}}}
               timeout: 3
-               tenant: 3fb0eae714da4f7d9f345641fee1f936
+               tenant: d45be0f05d9748f491db9e49fb230eab
      disable_rollback: 1
-stack_user_project_id: 3fb0eae714da4f7d9f345641fee1f936
+               action: CREATE
+           deleted_at: NULL
+stack_user_project_id: d45be0f05d9748f491db9e49fb230eab
                backup: 0
        uq_name_active: 1
-         nested_depth: 0
-          convergence: 0
- prev_raw_template_id: NULL
-    current_traversal: NULL
-         current_deps: null
- parent_resource_name: NULL
 1 row in set (0.00 sec)
 
 ERROR:
@@ -85,27 +80,17 @@ No query specified
 ```
 mysql> select * from resource \G;
 *************************** 1. row ***************************
-            nova_instance: c1073b9e-6cbb-4ff8-b971-66ac840e1344
-                     name: network
-               created_at: 2019-12-01 22:04:11
-               updated_at: NULL
-                   action: CREATE
-                   status: COMPLETE
-            status_reason: state changed
-                 stack_id: d3961cf3-a6f6-4e44-b087-72b6bf9e1a8e
-            rsrc_metadata: {}
-          properties_data: {"forwarding_mode": "l2_l3", "uuid": "c1073b9e-6cbb-4ff8-b971-66ac840e1344", "admin_state_up": true, "route_targets": [], "shared": false, "name": "c1073b9e-6cbb-4ff8-b971-66ac840e1344"}
-                     uuid: 19c8cf58-3fb8-4ab0-9692-d546c9a988dd
-                       id: 1
-                engine_id: NULL
-               atomic_key: NULL
-                needed_by: []
-                 requires: []
-                 replaces: NULL
-              replaced_by: NULL
-      current_template_id: NULL
-properties_data_encrypted: 0
-            root_stack_id: d3961cf3-a6f6-4e44-b087-72b6bf9e1a8e
+             id: 75403a37-893f-43da-b881-89f26b9d66d5
+  nova_instance: 811d15de-b1f2-465d-9020-2f6d40313017
+           name: network
+     created_at: 2019-12-03 00:22:47
+     updated_at: NULL
+         status: COMPLETE
+  status_reason: state changed
+       stack_id: 428ab810-5946-42c0-b18b-042d312de06f
+  rsrc_metadata: {}
+         action: CREATE
+properties_data: {"forwarding_mode": "l2_l3", "uuid": "811d15de-b1f2-465d-9020-2f6d40313017", "admin_state_up": true, "shared": false, "route_targets": [], "name": "811d15de-b1f2-465d-9020-2f6d40313017"}
 1 row in set (0.00 sec)
 
 ERROR:
@@ -120,8 +105,8 @@ No query specified
 +----------------------------------+---------+
 | ID                               | Name    |
 +----------------------------------+---------+
-| b87b147b20a643b3a3ea29567e11f7ca | service |
-| d83c0ec5ab4746988aacff093dfa9a96 | admin   |
+| 1baba4bc10444cada4023c02bd1f114c | admin   |
+| d727e035945d450f98ee4a5e633e7b1b | service |
 +----------------------------------+---------+
 ```
 - 再度、heat-stackの状態を確認してみる
@@ -158,20 +143,24 @@ client_creation_wait = 5000
 contrail_version = 3
 
 [purge_tool]
-stack_name = "network_c1073b9e-6cbb-4ff8-b971-66ac840e1344"
-tenant_id = "3fb0eae714da4f7d9f345641fee1f936"
+stack_name = "network_811d15de-b1f2-465d-9020-2f6d40313017"
+tenant_id = "d45be0f05d9748f491db9e49fb230eab"
 username = "demo"
 ```
 - heat-stack-purge-toolを起動する
 
 ```
 # python heat_stack_purge_tool.py
+...
+Stack DELETE COMPLETE (network_811d15de-b1f2-465d-9020-2f6d40313017): Stack DELETE completed successfully
 ```
 - purge_tool.logを確認する
 
 ```
 ...
-2019-12-01 22:26:59,103:INFO:deleting ContrailVirtualNetwork "network" [c1073b9e-6cbb-4ff8-b971-66ac840e1344] Stack "network_c1073b9e-6cbb-4ff8-b971-66ac840e1344" [d3961cf3-a6f6-4e44-b087-72b6bf9e1a8e]
+2019-12-03 00:37:21,179:INFO:Stack DELETE IN_PROGRESS (network_811d15de-b1f2-465d-9020-2f6d40313017): Stack DELETE started
+2019-12-03 00:37:21,195:INFO:deleting ContrailVirtualNetwork "network" [811d15de-b1f2-465d-9020-2f6d40313017] Stack "network_811d15de-b1f2-465d-9020-2f6d40313017" [428ab810-5946-42c0-b18b-042d312de06f]
+2019-12-03 00:37:22,631:INFO:Stack DELETE COMPLETE (network_811d15de-b1f2-465d-9020-2f6d40313017): Stack DELETE completed successfully
 ```
 
 ### (4) 事後確認
@@ -180,30 +169,25 @@ username = "demo"
 ```
 mysql> select * from stack \G;
 *************************** 1. row ***************************
-                   id: d3961cf3-a6f6-4e44-b087-72b6bf9e1a8e
-           created_at: 2019-12-01 22:04:11
+                   id: 428ab810-5946-42c0-b18b-042d312de06f
+           created_at: 2019-12-03 00:22:47
            updated_at: NULL
-           deleted_at: 2019-12-01 22:26:59
-                 name: network_c1073b9e-6cbb-4ff8-b971-66ac840e1344
-      raw_template_id: 1
-        user_creds_id: 1
+                 name: network_811d15de-b1f2-465d-9020-2f6d40313017
+      raw_template_id: 12
+        user_creds_id: 10
              username: admin
              owner_id: NULL
-               action: DELETE
                status: COMPLETE
         status_reason: Stack DELETE completed successfully
+           parameters: {"parameters": {"admin_state_up": true, "uuid": "811d15de-b1f2-465d-9020-2f6d40313017", "name": "811d15de-b1f2-465d-9020-2f6d40313017"}, "resource_registry": {"resources": {}}}
               timeout: 3
-               tenant: 3fb0eae714da4f7d9f345641fee1f936
+               tenant: d45be0f05d9748f491db9e49fb230eab
      disable_rollback: 1
-stack_user_project_id: 3fb0eae714da4f7d9f345641fee1f936
+               action: DELETE
+           deleted_at: 2019-12-03 00:37:22
+stack_user_project_id: d45be0f05d9748f491db9e49fb230eab
                backup: 0
        uq_name_active: NULL
-         nested_depth: 0
-          convergence: 0
- prev_raw_template_id: NULL
-    current_traversal: NULL
-         current_deps: null
- parent_resource_name: NULL
 1 row in set (0.00 sec)
 
 ERROR:
